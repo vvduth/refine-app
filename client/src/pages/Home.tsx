@@ -15,7 +15,7 @@ const Home = () => {
           title="Propterties for Sale"
           value = {684}
           series= {[75,25]}
-          colors = {['#475be8', '#e4e8ef']}
+          colors = {['#475be8', '#e4b8ef']}
         />
         <PieChart 
           title="Propterties for Rent"
@@ -33,11 +33,15 @@ const Home = () => {
           title="Total Cities"
           value = {555}
           series= {[75,25]}
-          colors = {['#475be8', '#e4e8bf']}
+          colors = {['#475be8', '#e3e7bf']}
         />
 
 
       </Box>
+      <Stack gap={4} mt="25px" width={"100%"} direction={{xs: 'column', lg: 'row'}} >
+          <TotalRevenue /> 
+          <PropertyReferrals />
+      </Stack>
     </Box>
   )
 }
