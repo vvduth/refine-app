@@ -15,7 +15,13 @@ app.get("/", (req, res) => {
 const startServer = async() => {
     try {
         connectDb(process.env.MONGO_URL);
+
+        app.listen(8080, () => {
+            console.log("server is listening on port 8080")
+        })
     } catch(e) {
         console.log(e)
     }
 }
+
+startServer()  ; 
