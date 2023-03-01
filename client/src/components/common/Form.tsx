@@ -22,7 +22,6 @@ const Form = ({
   handleImageChange,
   propertyImage,
   formLoading,
-  onFinish,
   onFinishHandler,
 }: FormProps) => {
   return (
@@ -113,6 +112,7 @@ const Form = ({
                 defaultValue="apartment"
                 {...register("propertyType", { required: true })}
               >
+                <MenuItem value="apartment">Apartment</MenuItem>
                 <MenuItem value="villa">Villa</MenuItem>
                 <MenuItem value="farmhouse">Farmhouse</MenuItem>
                 <MenuItem value="condos">Condos</MenuItem>
@@ -187,11 +187,11 @@ const Form = ({
                 Upload *
                 <input
                   hidden
-                  accept="image/"
+                  accept="image/*"
                   type={"file"}
                   onChange={(e) => {
                     //@ts-ignore
-                    handleImageChange(e.target.files[0]);
+                    handleImageChange(e.target.files![0]);
                   }}
                 />
               </Button>
