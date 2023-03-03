@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Add } from "@mui/icons-material";
 import { useList } from "@pankod/refine-core";
 import { useTable } from "@pankod/refine-core";
@@ -21,11 +21,32 @@ const AllProperties = () => {
     tableQueryResult: { data, isLoading, isError },
     current,
     setCurrent,
+    pageCount,
+    sorter,
+    filters,
+    setFilters,
     setPageSize,
     setSorter,
   } = useTable();
 
   const allProperties = data?.data ?? []; // default to emptty arr if there no data
+
+  const currentPrice = sorter.find((item) => item.field === "price")?.order;
+
+  const currentFilterValue = useMemo(() => {
+    const logicalFilter = filters.flatMap((item) =>
+      "field" in item ? item : []
+    );
+
+    return {
+      title: logicalFilter.find((item) => item.field === 'title')?.value || '',
+      propertyType: logicalFilter.find((item) => item.field === 'propertyType')?.value || ''
+    }
+  }, [filters]);
+
+  const toggleSort = (field: string) => {
+    setSorter([{ field, order: currentPrice === "asc" ? "desc" : "asc" }]);
+  };
 
   if (isLoading) return <Typography>Loading...</Typography>;
   if (isError) return <Typography>Error, something went wrong</Typography>;
@@ -53,8 +74,10 @@ const AllProperties = () => {
               mb={{ xs: "20px", sm: 0 }}
             >
               <CustomButton
-                title={`Sort price`}
-                handleClick={() => {}}
+                title={`Sort price ${currentPrice === "asc" ? "↑" : "↓"}`}
+                handleClick={() => {
+                  toggleSort("price");
+                }}
                 backgroundColor="#475be8"
                 color="#fcfcfc"
               />
@@ -62,8 +85,16 @@ const AllProperties = () => {
                 variant="outlined"
                 color="info"
                 placeholder="Search by title"
-                value={""}
-                onChange={(e) => {}}
+                value={currentFilterValue.title}
+                onChange={(e) => {
+                  setFilters([
+                    {
+                      field: 'title',
+                      operator: 'contains',
+                      value: e.target.value ? e.target.value : undefined
+                    }
+                  ])
+                }}
               />
               <Select
                 variant="outlined"
@@ -72,8 +103,16 @@ const AllProperties = () => {
                 required
                 inputProps={{ "aria-label": "Without label" }}
                 defaultValue=""
-                value={""}
-                onChange={() => {}}
+                value={currentFilterValue.propertyType}
+                onChange={(e) => {
+                  setFilters([
+                    {
+                      field: 'propertyType',
+                      operator: 'eq',
+                      value: e.target.value 
+                    }
+                  ], 'replace')
+                }}
               >
                 <MenuItem value="">All</MenuItem>
                 {[
@@ -133,11 +172,15 @@ const AllProperties = () => {
             alignItems="center"
             gap="5px"
           >
-            Page 2
+            Page{" "}
+            <strong>
+              {current} of {pageCount}
+            </strong>
           </Box>
           <CustomButton
             title="Next"
             handleClick={() => setCurrent((prev) => prev + 1)}
+            disabled={current === pageCount}
             backgroundColor="#475be8"
             color="#fcfcfc"
           />
@@ -150,7 +193,11 @@ const AllProperties = () => {
             defaultValue={10}
             onChange={() => {}}
           >
-            <MenuItem value="">All</MenuItem>
+            {[10, 20, 30, 40].map((size) => (
+              <MenuItem key={size} value={size}>
+                Show {size}
+              </MenuItem>
+            ))}
           </Select>
         </Box>
       )}
